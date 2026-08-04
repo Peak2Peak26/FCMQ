@@ -54,6 +54,13 @@ body{font-family:'DM Sans',sans-serif;color:var(--black);background:var(--white)
 .p-add-btn:hover{opacity:0.85}
 .p-chart-link{background:none;border:none;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;padding:0;margin-bottom:8px;text-align:left;text-decoration:underline}
 .p-chart-link:hover{opacity:0.8}
+.color-swatch-row{display:flex;gap:8px;margin-bottom:10px}
+.color-swatch{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px;border-radius:var(--radius-sm);border:1.5px solid transparent}
+.color-swatch img{width:44px;height:44px;object-fit:contain;background:var(--gray-50);border-radius:6px;border:1.5px solid var(--gray-100)}
+.color-swatch span{font-size:10px;color:var(--gray-700);font-weight:500}
+.color-swatch.active{border-color:var(--accent)}
+.color-swatch.active img{border-color:var(--accent)}
+.color-swatch.active span{color:var(--accent);font-weight:700}
 
 /* SIZE CHART LIGHTBOX */
 .chart-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:400;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
@@ -181,7 +188,11 @@ footer{text-align:center;font-size:11px;color:var(--gray-500);padding:24px;borde
 var PRODUCTS = [
   { id:'tshirt',    name:'T-Shirt',    price:29.00, img:'images/tshirt-fcmq.png',    sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-tshirt-fcmq.png' },
   { id:'crewneck',  name:'Crewneck',   price:35.00, img:'images/crewneck-fcmq.png',  sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-crewneck-fcmq.png' },
-  { id:'hoodie',    name:'Hoodie',     price:49.00, img:'images/hoodie-fcmq.png',    sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-hoodie-fcmq.png' },
+  { id:'hoodie',    name:'Hoodie',     price:49.00, img:'images/hoodie-fcmq-noir.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-hoodie-fcmq.png',
+    colors:[
+      { name:'Noir', img:'images/hoodie-fcmq-noir.png' },
+      { name:'Gris Sport', img:'images/hoodie-fcmq-gris.png' }
+    ] },
   { id:'tuque',     name:'Tuque',      price:29.00, img:'images/tuque-fcmq.png',     sizes:['Unique'] },
   { id:'casquette', name:'Casquette',  price:25.00, img:'images/casquette-fcmq.png', sizes:['Unique'] }
 ];
@@ -203,13 +214,25 @@ function renderProducts() {
     var sizeNote = p.sizes.length <= 1 ? 'Taille unique' :
       (p.sizes[0] + '–' + p.sizes[p.sizes.length - (hasBigSizes ? BIG_SIZES.length : 1) - 1] + (hasBigSizes ? ', +' + fmt(SURCHARGE) + ' pour ' + BIG_SIZES.join('-') : ''));
     var sizeChartLink = p.sizeChart ? '<button type="button" class="p-chart-link" onclick="openChart(\'' + p.sizeChart + '\',\'' + p.name + '\')">📏 Guide des tailles</button>' : '';
+    var colorSwatches = '';
+    if (p.colors) {
+      var swatchItems = p.colors.map(function(c, ci) {
+        var isActive = ci === 0;
+        return '<div class="color-swatch' + (isActive ? ' active' : '') + '" data-product="' + p.id + '" data-color="' + c.name + '" onclick="selectColor(\'' + p.id + '\',\'' + c.name + '\')">' +
+          '<img src="' + c.img + '" alt="' + p.name + ' ' + c.name + '">' +
+          '<span>' + c.name + '</span>' +
+        '</div>';
+      }).join('');
+      colorSwatches = '<div class="color-swatch-row">' + swatchItems + '</div>';
+    }
     return '' +
       '<div class="product-card">' +
-        '<img class="product-card-img" src="' + p.img + '" alt="' + p.name + ' FCMQ">' +
+        '<img class="product-card-img" id="img-' + p.id + '" src="' + p.img + '" alt="' + p.name + ' FCMQ">' +
         '<div class="product-card-body">' +
           '<div class="product-card-name">' + p.name + '</div>' +
           '<div class="product-card-price">' + fmt(p.price) + ' <span>/ pièce · ' + sizeNote + '</span></div>' +
           sizeChartLink +
+          colorSwatches +
           '<div class="product-row">' +
             '<select class="p-select" id="size-' + p.id + '">' + sizeOpts + '</select>' +
             '<div class="p-qty-wrap">' +
@@ -241,6 +264,19 @@ function stepQty(id, delta) {
   el.value = v;
 }
 
+var selectedColors = {};
+function selectColor(id, colorName) {
+  selectedColors[id] = colorName;
+  var prod = PRODUCTS.filter(function(p){ return p.id === id; })[0];
+  var color = prod.colors.filter(function(c){ return c.name === colorName; })[0];
+  document.getElementById('img-' + id).src = color.img;
+
+  var swatches = document.querySelectorAll('.color-swatch[data-product="' + id + '"]');
+  swatches.forEach(function(sw) {
+    sw.classList.toggle('active', sw.getAttribute('data-color') === colorName);
+  });
+}
+
 // ── CART STATE ─────────────────────────────────────────────────────────
 var cart = [];
 try {
@@ -256,9 +292,10 @@ function addToCart(id) {
   var prod = PRODUCTS.filter(function(p){ return p.id === id; })[0];
   var size = document.getElementById('size-' + id).value;
   var qty = Math.max(1, parseInt(document.getElementById('qty-' + id).value, 10) || 1);
-  var existing = cart.filter(function(it){ return it.id === id && it.size === size; })[0];
+  var color = prod.colors ? (selectedColors[id] || prod.colors[0].name) : null;
+  var existing = cart.filter(function(it){ return it.id === id && it.size === size && it.color === color; })[0];
   if (existing) { existing.qty += qty; }
-  else { cart.push({ id: id, name: prod.name, size: size, qty: qty }); }
+  else { cart.push({ id: id, name: prod.name, size: size, color: color, qty: qty }); }
   saveCart();
   renderCart();
 }
@@ -296,7 +333,7 @@ function renderCart() {
     return '' +
       '<div class="cart-item">' +
         '<div class="cart-item-top">' +
-          '<div><div class="cart-item-name">' + it.name + '</div><div class="cart-item-detail">Grandeur ' + it.size + ' · ' + fmt(unit) + '/pièce</div></div>' +
+          '<div><div class="cart-item-name">' + it.name + (it.color ? ' — ' + it.color : '') + '</div><div class="cart-item-detail">Grandeur ' + it.size + ' · ' + fmt(unit) + '/pièce</div></div>' +
           '<button class="cart-item-remove" onclick="removeFromCart(' + idx + ')">×</button>' +
         '</div>' +
         '<div class="cart-item-bottom">' +
