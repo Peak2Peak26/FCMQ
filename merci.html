@@ -11,6 +11,7 @@
 body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#000000 0%,#1a1a1a 60%,#000000 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
 .card{max-width:440px}
 .emoji{font-size:48px;margin-bottom:16px}
+.merci-logo{max-width:160px;width:60%;margin:0 auto 18px;display:block}
 h1{font-family:'DM Serif Display',serif;font-size:30px;font-weight:400;margin-bottom:12px}
 p{font-size:14px;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:20px}
 a{display:inline-block;background:#1d9ad7;color:#111110;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.05em}
@@ -18,7 +19,7 @@ a{display:inline-block;background:#1d9ad7;color:#111110;text-decoration:none;pad
 </head>
 <body>
 <div class="card">
-  <div class="emoji">⚜️✅</div>
+  <img src="images/logo-fcmq.png" alt="FCMQ" class="merci-logo">
   <h1>Merci pour ta commande!</h1>
   <p>Ton paiement a été reçu. Un courriel de confirmation Stripe s'en vient. On prépare ta commande!</p>
   <a href="/">Retour à la boutique</a>
@@ -31,7 +32,7 @@ a{display:inline-block;background:#1d9ad7;color:#111110;text-decoration:none;pad
 // destinataires déjà fixés dans EmailJS — pas de risque à les exposer ici.
 var EMAILJS_PUBLIC_KEY  = 'v2EsCCD55O3D8WsVc';
 var EMAILJS_SERVICE_ID  = 'service_o3zcv4n';
-var EMAILJS_TEMPLATE_ID = 'REMPLACE_PAR_TON_NOUVEAU_TEMPLATE_ID_FCMQ';
+var EMAILJS_TEMPLATE_ID = 'xdbdnv3';
 
 (function(){ emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); })();
 
@@ -70,7 +71,7 @@ function sendOrderNotification() {
     var lineTotal = unit * it.qty;
     subtotal += lineTotal;
     return {
-      nom: prod.name + ' — Grandeur ' + it.size,
+      nom: prod.name + (it.color ? ' — ' + it.color : '') + ' — Grandeur ' + it.size,
       units: it.qty,
       price: lineTotal.toFixed(2)
     };
