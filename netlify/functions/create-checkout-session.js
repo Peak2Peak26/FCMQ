@@ -1,12 +1,19 @@
-// Fonction serveur : crée une session de paiement Stripe à partir du panier
-// envoyé par index.html, puis retourne l'URL de paiement Stripe à laquelle
+// Fonction serveur : crée un lien de paiement Square à partir du panier
+// envoyé par index.html, puis retourne l'URL de paiement Square à laquelle
 // le navigateur du client est redirigé.
 //
-// IMPORTANT : la clé secrète Stripe ne doit JAMAIS être écrite dans ce fichier.
-// Elle doit être ajoutée comme variable d'environnement sur Netlify :
-//   Site settings → Environment variables → STRIPE_SECRET_KEY = sk_live_...
+// IMPORTANT : le jeton d'accès Square ne doit JAMAIS être écrit dans ce fichier.
+// Il doit être ajouté comme variable d'environnement sur Netlify :
+//   Site settings → Environment variables → SQUARE_ACCESS_TOKEN = EAAA...
+//   Site settings → Environment variables → SQUARE_LOCATION_ID  = L...
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
+const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID;
+// Mettre 'https://connect.squareupsandbox.com' pendant les tests avec un jeton sandbox,
+// puis repasser à 'https://connect.squareup.com' pour le vrai compte (production).
+const SQUARE_API_BASE = process.env.SQUARE_ENV === 'sandbox'
+  ? 'https://connect.squareupsandbox.com'
+  : 'https://connect.squareup.com';
 
 // Catalogue = source de vérité des prix (jamais fait confiance aux prix envoyés
 // par le navigateur, pour éviter qu'un client modifie le prix côté client).
@@ -27,6 +34,9 @@ const TVQ_RATE = 0.09975;
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Méthode non autorisée' }) };
+  }
+  if (!SQUARE_ACCESS_TOKEN || !SQUARE_LOCATION_ID) {
+    return { statusCode: 500, body: JSON.stringify({ error: "Configuration Square manquante (variables d'environnement)" }) };
   }
 
   let items, customer;
@@ -56,51 +66,70 @@ exports.handler = async function (event) {
       const unit_amount = prod.base + (BIG_SIZES.indexOf(it.size) !== -1 ? SURCHARGE_CENTS : 0);
 
       return {
-        price_data: {
-          currency: 'cad',
-          product_data: { name: prod.name + ' — Grandeur ' + it.size },
-          unit_amount: unit_amount
-        },
-        quantity: qty
+        name: prod.name + ' — Grandeur ' + it.size,
+        quantity: String(qty),
+        base_price_money: { amount: unit_amount, currency: 'CAD' }
       };
     });
 
     // ── Livraison + taxes calculées sur le sous-total, ajoutées comme lignes distinctes ──
-    const subtotalCents = line_items.reduce(function (s, li) { return s + li.price_data.unit_amount * li.quantity; }, 0);
+    const subtotalCents = line_items.reduce(function (s, li) {
+      return s + li.base_price_money.amount * parseInt(li.quantity, 10);
+    }, 0);
     const avantTaxesCents = subtotalCents + LIVRAISON_CENTS;
     const tpsCents = Math.round(avantTaxesCents * TPS_RATE);
     const tvqCents = Math.round(avantTaxesCents * TVQ_RATE);
 
     line_items.push({
-      price_data: { currency: 'cad', product_data: { name: 'Livraison' }, unit_amount: LIVRAISON_CENTS },
-      quantity: 1
+      name: 'Livraison',
+      quantity: '1',
+      base_price_money: { amount: LIVRAISON_CENTS, currency: 'CAD' }
     });
     line_items.push({
-      price_data: { currency: 'cad', product_data: { name: 'TPS (5%)' }, unit_amount: tpsCents },
-      quantity: 1
+      name: 'TPS (5%)',
+      quantity: '1',
+      base_price_money: { amount: tpsCents, currency: 'CAD' }
     });
     line_items.push({
-      price_data: { currency: 'cad', product_data: { name: 'TVQ (9,975%)' }, unit_amount: tvqCents },
-      quantity: 1
+      name: 'TVQ (9,975%)',
+      quantity: '1',
+      base_price_money: { amount: tvqCents, currency: 'CAD' }
     });
 
     const siteUrl = process.env.URL || 'https://fcmq.netlify.app';
 
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: line_items,
-      customer_email: customer.email,
-      metadata: {
-        customer_name: customer.name,
-        customer_phone: customer.phone || '',
-        shipping_address: [customer.adresse, customer.ville, customer.province, customer.codepostal].join(', ')
+    const payload = {
+      idempotency_key: (Date.now().toString(36) + Math.random().toString(36).slice(2)),
+      order: {
+        location_id: SQUARE_LOCATION_ID,
+        line_items: line_items
       },
-      success_url: siteUrl + '/merci.html?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: siteUrl + '/'
+      checkout_options: {
+        redirect_url: siteUrl + '/merci.html',
+        ask_for_shipping_address: false
+      },
+      pre_populated_data: {
+        buyer_email: customer.email
+      }
+    };
+
+    const resp = await fetch(SQUARE_API_BASE + '/v2/online-checkout/payment-links', {
+      method: 'POST',
+      headers: {
+        'Square-Version': '2026-08-19',
+        'Authorization': 'Bearer ' + SQUARE_ACCESS_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
-    return { statusCode: 200, body: JSON.stringify({ url: session.url }) };
+    const data = await resp.json();
+    if (!resp.ok) {
+      const msg = (data.errors && data.errors[0] && data.errors[0].detail) || 'Erreur Square';
+      return { statusCode: 500, body: JSON.stringify({ error: msg }) };
+    }
+
+    return { statusCode: 200, body: JSON.stringify({ url: data.payment_link.url }) };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
