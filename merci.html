@@ -20,8 +20,8 @@ a{display:inline-block;background:#1d9ad7;color:#111110;text-decoration:none;pad
 <body>
 <div class="card">
   <img src="images/logo-fcmq.png" alt="FCMQ" class="merci-logo">
-  <h1>Merci pour votre commande!</h1>
-  <p>Votre paiement a été reçu. Un courriel de confirmation Square vous sera envoyé. On prépare votre commande!</p>
+  <h1>Merci pour ta commande!</h1>
+  <p>Ton paiement a été reçu. Un courriel de confirmation s'en vient. On prépare ta commande!</p>
   <a href="/">Retour à la boutique</a>
 </div>
 
@@ -64,20 +64,20 @@ function sendOrderNotification() {
   if (!Array.isArray(cart) || cart.length === 0) return;
 
   var subtotal = 0;
-  var ordres = cart.map(function (it) {
+  var orders = cart.map(function (it) {
     var prod = PRODUCTS[it.id];
     if (!prod) return null;
     var unit = unitPrice(prod, it.size);
     var lineTotal = unit * it.qty;
     subtotal += lineTotal;
     return {
-      nom: prod.name + (it.color ? ' — ' + it.color : '') + ' — Grandeur ' + it.size,
+      name: prod.name + (it.color ? ' — ' + it.color : '') + ' — Grandeur ' + it.size,
       units: it.qty,
       price: lineTotal.toFixed(2)
     };
   }).filter(Boolean);
 
-  if (ordres.length === 0) return;
+  if (orders.length === 0) return;
 
   var avantTaxes = subtotal + LIVRAISON;
   var tps = avantTaxes * TPS_RATE;
@@ -85,7 +85,7 @@ function sendOrderNotification() {
   var taxes = tps + tvq;
 
   var qp = window.location.search ? new URLSearchParams(window.location.search) : null;
-  var sessionId = qp ? qp.get('session_id') : null;
+  var sessionId = qp ? (qp.get('session_id') || qp.get('orderId') || qp.get('transactionId')) : null;
   var orderId = sessionId ? sessionId.slice(-8).toUpperCase() : Date.now().toString().slice(-8);
 
   var customer = {};
@@ -93,7 +93,7 @@ function sendOrderNotification() {
 
   var templateParams = {
     order_id: orderId,
-    ordres: ordres,
+    orders: orders,
     client_name: customer.name || '',
     client_email: customer.email || '',
     client_phone: customer.phone || '',
