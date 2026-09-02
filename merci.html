@@ -94,10 +94,13 @@ function sendOrderNotification() {
   var templateParams = {
     order_id: orderId,
     orders: orders,
-    client_name: customer.name || '',
-    client_email: customer.email || '',
-    client_phone: customer.phone || '',
-    client_address: [customer.adresse, customer.ville, customer.province, customer.codepostal].filter(Boolean).join(', '),
+    customer_name: customer.name || '',
+    customer_address: customer.adresse || '',
+    customer_city: [customer.ville, customer.province].filter(Boolean).join(', '),
+    customer_CP: customer.codepostal || '',
+    customer_phone: customer.phone || '',
+    email: customer.email || '',
+    shipping_method: 'Postes Canada',
     cost: {
       shipping: LIVRAISON.toFixed(2),
       tax: taxes.toFixed(2)
