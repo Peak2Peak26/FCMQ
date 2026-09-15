@@ -103,7 +103,8 @@ function sendOrderNotification() {
     shipping_method: 'Transporteur',
     cost: {
       shipping: LIVRAISON.toFixed(2),
-      tax: taxes.toFixed(2)
+      tax: taxes.toFixed(2),
+      total: (avantTaxes + taxes).toFixed(2)
     }
   };
 
