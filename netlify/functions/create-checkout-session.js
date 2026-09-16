@@ -27,7 +27,7 @@ const PRODUCTS = {
 const BIG_SIZES = ['2XL', '3XL', '4XL'];
 const SURCHARGE_CENTS = 500; // +5,00 $ pour 2XL / 3XL / 4XL
 const VALID_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Unique'];
-const LIVRAISON_CENTS = 1500; // 15,00 $
+const LIVRAISON_CENTS = 1000; // 10,00 $
 const TPS_RATE = 0.05;
 const TVQ_RATE = 0.09975;
 
