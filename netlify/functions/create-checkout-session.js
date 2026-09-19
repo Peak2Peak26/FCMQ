@@ -19,7 +19,7 @@ const SQUARE_API_BASE = process.env.SQUARE_ENV === 'sandbox'
 // par le navigateur, pour éviter qu'un client modifie le prix côté client).
 const PRODUCTS = {
   tshirt:    { name: 'T-Shirt — FCMQ',    base: 2900 }, // en cents
-  crewneck:  { name: 'Crewneck — FCMQ',   base: 3500 },
+  crewneck:  { name: 'Crewneck — FCMQ',   base: 3900 },
   hoodie:    { name: 'Hoodie — FCMQ',     base: 4900 },
   tuque:     { name: 'Tuque — FCMQ',      base: 2900 },
   casquette: { name: 'Casquette — FCMQ',  base: 2500 }
