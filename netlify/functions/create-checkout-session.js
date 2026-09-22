@@ -19,10 +19,15 @@ const SQUARE_API_BASE = process.env.SQUARE_ENV === 'sandbox'
 // par le navigateur, pour éviter qu'un client modifie le prix côté client).
 const PRODUCTS = {
   tshirt:    { name: 'T-Shirt — FCMQ',    base: 2900 }, // en cents
+  'tshirt-kidz': { name: 'T-Shirt (Kidz) — FCMQ', base: 2700 },
   'manches-longues': { name: 'T-Shirt Manches Longues — FCMQ', base: 3500 },
+  'manches-longues-kidz': { name: 'T-Shirt Manches Longues (Kidz) — FCMQ', base: 3200 },
   crewneck:  { name: 'Crewneck — FCMQ',   base: 4500 },
+  'crewneck-kidz': { name: 'Crewneck (Kidz) — FCMQ', base: 4200 },
   hoodie:    { name: 'Hoodie — FCMQ',     base: 4900 },
+  'hoodie-kidz': { name: 'Hoodie (Kidz) — FCMQ', base: 4500 },
   'veste-fz': { name: 'Veste Full Zip — FCMQ', base: 5500 },
+  'veste-fz-kidz': { name: 'Veste Full Zip (Kidz) — FCMQ', base: 5200 },
   polo:      { name: 'Polo Golf — FCMQ', base: 3900 },
   tuque:     { name: 'Tuque — FCMQ',      base: 2900 },
   casquette: { name: 'Casquette — FCMQ',  base: 2500 }
