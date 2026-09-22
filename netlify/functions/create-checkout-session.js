@@ -22,12 +22,13 @@ const PRODUCTS = {
   'manches-longues': { name: 'T-Shirt Manches Longues — FCMQ', base: 3500 },
   crewneck:  { name: 'Crewneck — FCMQ',   base: 4500 },
   hoodie:    { name: 'Hoodie — FCMQ',     base: 4900 },
+  'veste-fz': { name: 'Veste Full Zip — FCMQ', base: 5500 },
   tuque:     { name: 'Tuque — FCMQ',      base: 2900 },
   casquette: { name: 'Casquette — FCMQ',  base: 2500 }
 };
 const BIG_SIZES = ['2XL', '3XL', '4XL'];
 const SURCHARGE_CENTS = 500; // +5,00 $ pour 2XL / 3XL / 4XL
-const VALID_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Unique'];
+const VALID_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Unique'];
 const LIVRAISON_CENTS = 1000; // 10,00 $
 const TPS_RATE = 0.05;
 const TVQ_RATE = 0.09975;
