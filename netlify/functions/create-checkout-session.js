@@ -23,6 +23,7 @@ const PRODUCTS = {
   crewneck:  { name: 'Crewneck — FCMQ',   base: 4500 },
   hoodie:    { name: 'Hoodie — FCMQ',     base: 4900 },
   'veste-fz': { name: 'Veste Full Zip — FCMQ', base: 5500 },
+  polo:      { name: 'Polo Golf — FCMQ', base: 3900 },
   tuque:     { name: 'Tuque — FCMQ',      base: 2900 },
   casquette: { name: 'Casquette — FCMQ',  base: 2500 }
 };
