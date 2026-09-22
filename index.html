@@ -243,7 +243,7 @@ function renderProducts() {
     var sizeOpts = active.sizes.map(function(s){ return '<option value="' + s + '">' + s + (BIG_SIZES.indexOf(s)!==-1 ? ' (+' + fmt(SURCHARGE) + ')' : '') + '</option>'; }).join('');
     var hasBigSizes = active.sizes.some(function(s){ return BIG_SIZES.indexOf(s) !== -1; });
     var sizeNote = active.sizes.length <= 1 ? 'Taille unique' :
-      (active.sizes[0] + '–' + active.sizes[active.sizes.length - (hasBigSizes ? BIG_SIZES.length : 1) - 1] + (hasBigSizes ? ', +' + fmt(SURCHARGE) + ' pour ' + BIG_SIZES.join('-') : ''));
+      (active.sizes[0] + '–' + active.sizes[active.sizes.length - (hasBigSizes ? BIG_SIZES.length + 1 : 1)] + (hasBigSizes ? ', +' + fmt(SURCHARGE) + ' pour ' + BIG_SIZES.join('-') : ''));
     var sizeChartLink = p.sizeChart ? '<button type="button" class="p-chart-link" onclick="openChart(\'' + p.sizeChart + '\',\'' + p.name + '\')">📏 Guide des tailles</button>' : '';
     var colorSwatches = '';
     if (p.colors) {
