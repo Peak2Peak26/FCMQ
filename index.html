@@ -55,6 +55,9 @@ body{font-family:'DM Sans',sans-serif;color:var(--black);background:var(--white)
 .p-chart-link{background:none;border:none;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;padding:0;margin-bottom:8px;text-align:left;text-decoration:underline}
 .p-chart-link:hover{opacity:0.8}
 .color-swatch-row{display:flex;gap:8px;margin-bottom:10px}
+.audience-toggle-row{display:flex;gap:6px;margin:6px 0 10px}
+.audience-btn{flex:1;padding:6px 10px;font-size:13px;font-weight:600;border-radius:var(--radius-sm);border:1.5px solid #ddd;background:#fff;color:#555;cursor:pointer}
+.audience-btn.active{border-color:#1d9ad7;background:#1d9ad7;color:#fff}
 .color-swatch{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px;border-radius:var(--radius-sm);border:1.5px solid transparent}
 .color-swatch img{width:44px;height:44px;object-fit:contain;background:var(--gray-50);border-radius:6px;border:1.5px solid var(--gray-100)}
 .color-swatch span{font-size:10px;color:var(--gray-700);font-weight:500}
@@ -186,15 +189,20 @@ footer{text-align:center;font-size:11px;color:var(--gray-500);padding:24px;borde
 <script>
 // ── CATALOGUE ──────────────────────────────────────────────────────────────
 var PRODUCTS = [
-  { id:'tshirt',    name:'T-Shirt',    price:29.00, img:'images/tshirt-fcmq.png',    sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-tshirt-fcmq.png' },
-  { id:'manches-longues', name:'T-Shirt Manches Longues', price:35.00, img:'images/manches-longues-fcmq.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-manches-longues-fcmq.png' },
-  { id:'crewneck',  name:'Crewneck',   price:45.00, img:'images/crewneck-fcmq.png',  sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-crewneck-fcmq.png' },
-  { id:'hoodie',    name:'Hoodie',     price:49.00, img:'images/hoodie-fcmq-noir.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-hoodie-fcmq.png',
+  { id:'tshirt',    name:'T-Shirt',    price:29.00, img:'images/tshirt-fcmq.png',    sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-tshirt-fcmq.png', kidzId:'tshirt-kidz' },
+  { id:'tshirt-kidz', hidden:true, name:'T-Shirt (Kidz)', price:27.00, img:'images/tshirt-fcmq.png', sizes:['XS','S','M','L','XL'] },
+  { id:'manches-longues', name:'T-Shirt Manches Longues', price:35.00, img:'images/manches-longues-fcmq.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-manches-longues-fcmq.png', kidzId:'manches-longues-kidz' },
+  { id:'manches-longues-kidz', hidden:true, name:'T-Shirt Manches Longues (Kidz)', price:32.00, img:'images/manches-longues-fcmq.png', sizes:['XS','S','M','L','XL'] },
+  { id:'crewneck',  name:'Crewneck',   price:45.00, img:'images/crewneck-fcmq.png',  sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-crewneck-fcmq.png', kidzId:'crewneck-kidz' },
+  { id:'crewneck-kidz', hidden:true, name:'Crewneck (Kidz)', price:42.00, img:'images/crewneck-fcmq.png', sizes:['XS','S','M','L','XL'] },
+  { id:'hoodie',    name:'Hoodie',     price:49.00, img:'images/hoodie-fcmq-noir.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-hoodie-fcmq.png', kidzId:'hoodie-kidz',
     colors:[
       { name:'Noir', img:'images/hoodie-fcmq-noir.png' },
       { name:'Gris Sport', img:'images/hoodie-fcmq-gris.png' }
     ] },
-  { id:'veste-fz',  name:'Veste Full Zip', price:55.00, img:'images/veste-fz-fcmq.png', sizes:['XS','S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-veste-fz-fcmq.png' },
+  { id:'hoodie-kidz', hidden:true, name:'Hoodie (Kidz)', price:45.00, img:'images/hoodie-fcmq-noir.png', sizes:['XS','S','M','L','XL'] },
+  { id:'veste-fz',  name:'Veste Full Zip', price:55.00, img:'images/veste-fz-fcmq.png', sizes:['XS','S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-veste-fz-fcmq.png', kidzId:'veste-fz-kidz' },
+  { id:'veste-fz-kidz', hidden:true, name:'Veste Full Zip (Kidz)', price:52.00, img:'images/veste-fz-fcmq.png', sizes:['XS','S','M','L','XL'] },
   { id:'polo',      name:'Polo Golf', price:39.00, img:'images/polo-fcmq.png', sizes:['XS','S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-polo-fcmq.png' },
   { id:'tuque',     name:'Tuque',      price:29.00, img:'images/tuque-fcmq.png',     sizes:['Unique'] },
   { id:'casquette', name:'Casquette',  price:25.00, img:'images/casquette-fcmq.png', sizes:['Unique'] }
@@ -209,13 +217,33 @@ function fmt(n){ return n.toFixed(2).replace('.',',') + ' $'; }
 function unitPrice(prod, size){ return prod.price + (BIG_SIZES.indexOf(size) !== -1 ? SURCHARGE : 0); }
 
 // ── RENDER PRODUCTS ──────────────────────────────────────────────────────
+var selectedAudience = {};
+function selectAudience(id, audience) {
+  var qtySnapshot = {};
+  PRODUCTS.forEach(function(p){ var el = document.getElementById('qty-' + p.id); if (el) qtySnapshot[p.id] = el.value; });
+  selectedAudience[id] = audience;
+  renderProducts();
+  Object.keys(qtySnapshot).forEach(function(pid){ var el = document.getElementById('qty-' + pid); if (el) el.value = qtySnapshot[pid]; });
+}
+
 function renderProducts() {
   var grid = document.getElementById('product-grid');
-  grid.innerHTML = PRODUCTS.map(function(p, idx) {
-    var sizeOpts = p.sizes.map(function(s){ return '<option value="' + s + '">' + s + (BIG_SIZES.indexOf(s)!==-1 ? ' (+' + fmt(SURCHARGE) + ')' : '') + '</option>'; }).join('');
-    var hasBigSizes = p.sizes.some(function(s){ return BIG_SIZES.indexOf(s) !== -1; });
-    var sizeNote = p.sizes.length <= 1 ? 'Taille unique' :
-      (p.sizes[0] + '–' + p.sizes[p.sizes.length - (hasBigSizes ? BIG_SIZES.length : 1) - 1] + (hasBigSizes ? ', +' + fmt(SURCHARGE) + ' pour ' + BIG_SIZES.join('-') : ''));
+  grid.innerHTML = PRODUCTS.filter(function(p){ return !p.hidden; }).map(function(p, idx) {
+    var aud = selectedAudience[p.id] || 'adulte';
+    var kidzProd = p.kidzId ? PRODUCTS.filter(function(x){ return x.id === p.kidzId; })[0] : null;
+    var active = (aud === 'kidz' && kidzProd) ? kidzProd : p;
+
+    var audienceToggle = kidzProd ? (
+      '<div class="audience-toggle-row">' +
+        '<button type="button" class="audience-btn' + (aud !== 'kidz' ? ' active' : '') + '" onclick="selectAudience(\'' + p.id + '\',\'adulte\')">Adulte</button>' +
+        '<button type="button" class="audience-btn' + (aud === 'kidz' ? ' active' : '') + '" onclick="selectAudience(\'' + p.id + '\',\'kidz\')">Kidz</button>' +
+      '</div>'
+    ) : '';
+
+    var sizeOpts = active.sizes.map(function(s){ return '<option value="' + s + '">' + s + (BIG_SIZES.indexOf(s)!==-1 ? ' (+' + fmt(SURCHARGE) + ')' : '') + '</option>'; }).join('');
+    var hasBigSizes = active.sizes.some(function(s){ return BIG_SIZES.indexOf(s) !== -1; });
+    var sizeNote = active.sizes.length <= 1 ? 'Taille unique' :
+      (active.sizes[0] + '–' + active.sizes[active.sizes.length - (hasBigSizes ? BIG_SIZES.length : 1) - 1] + (hasBigSizes ? ', +' + fmt(SURCHARGE) + ' pour ' + BIG_SIZES.join('-') : ''));
     var sizeChartLink = p.sizeChart ? '<button type="button" class="p-chart-link" onclick="openChart(\'' + p.sizeChart + '\',\'' + p.name + '\')">📏 Guide des tailles</button>' : '';
     var colorSwatches = '';
     if (p.colors) {
@@ -233,7 +261,8 @@ function renderProducts() {
         '<img class="product-card-img" id="img-' + p.id + '" src="' + p.img + '" alt="' + p.name + ' FCMQ">' +
         '<div class="product-card-body">' +
           '<div class="product-card-name">' + p.name + '</div>' +
-          '<div class="product-card-price">' + fmt(p.price) + ' <span>/ pièce · ' + sizeNote + '</span></div>' +
+          audienceToggle +
+          '<div class="product-card-price">' + fmt(active.price) + ' <span>/ pièce · ' + sizeNote + '</span></div>' +
           sizeChartLink +
           colorSwatches +
           '<div class="product-row">' +
@@ -293,12 +322,15 @@ function saveCart() {
 
 function addToCart(id) {
   var prod = PRODUCTS.filter(function(p){ return p.id === id; })[0];
+  var aud = selectedAudience[id] || 'adulte';
+  var actualId = id;
+  if (aud === 'kidz' && prod.kidzId) { actualId = prod.kidzId; prod = PRODUCTS.filter(function(p){ return p.id === actualId; })[0]; }
   var size = document.getElementById('size-' + id).value;
   var qty = Math.max(1, parseInt(document.getElementById('qty-' + id).value, 10) || 1);
   var color = prod.colors ? (selectedColors[id] || prod.colors[0].name) : null;
-  var existing = cart.filter(function(it){ return it.id === id && it.size === size && it.color === color; })[0];
+  var existing = cart.filter(function(it){ return it.id === actualId && it.size === size && it.color === color; })[0];
   if (existing) { existing.qty += qty; }
-  else { cart.push({ id: id, name: prod.name, size: size, color: color, qty: qty }); }
+  else { cart.push({ id: actualId, name: prod.name, size: size, color: color, qty: qty }); }
   saveCart();
   renderCart();
 }
