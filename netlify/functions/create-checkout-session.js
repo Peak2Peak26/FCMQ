@@ -29,6 +29,7 @@ const PRODUCTS = {
   'veste-fz': { name: 'Veste Full Zip — FCMQ', base: 5500 },
   'veste-fz-kidz': { name: 'Veste Full Zip (Kidz) — FCMQ', base: 5200 },
   polo:      { name: 'Polo Golf — FCMQ', base: 3900 },
+  tumbler:   { name: 'Tumbler Café 20oz — FCMQ', base: 2900 },
   tuque:     { name: 'Tuque — FCMQ',      base: 2900 },
   casquette: { name: 'Casquette — FCMQ',  base: 2500 }
 };
