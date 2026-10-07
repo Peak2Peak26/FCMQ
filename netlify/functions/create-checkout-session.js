@@ -28,6 +28,8 @@ const PRODUCTS = {
   'hoodie-kidz': { name: 'Hoodie (Kidz) — FCMQ', base: 4500 },
   'veste-fz': { name: 'Veste Full Zip — FCMQ', base: 5500 },
   'veste-fz-kidz': { name: 'Veste Full Zip (Kidz) — FCMQ', base: 5200 },
+  'veste-sc': { name: 'Veste Sans Capuchon — FCMQ', base: 4900 },
+  'veste-sc-kidz': { name: 'Veste Sans Capuchon (Kidz) — FCMQ', base: 4500 },
   polo:      { name: 'Polo Golf — FCMQ', base: 3900 },
   tumbler:   { name: 'Tumbler Café 20oz — FCMQ', base: 2900 },
   tuque:     { name: 'Tuque — FCMQ',      base: 2900 },
@@ -35,8 +37,8 @@ const PRODUCTS = {
 };
 const BIG_SIZES = ['2XL', '3XL', '4XL'];
 const SURCHARGE_CENTS = 500; // +5,00 $ pour 2XL / 3XL / 4XL
-const VALID_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Unique'];
-const LIVRAISON_CENTS = 1000; // 10,00 $
+const VALID_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Unique'];
+const LIVRAISON_CENTS = 1500; // 15,00 $
 const TPS_RATE = 0.05;
 const TVQ_RATE = 0.09975;
 
