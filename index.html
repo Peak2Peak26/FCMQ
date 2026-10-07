@@ -189,11 +189,23 @@ footer{text-align:center;font-size:11px;color:var(--gray-500);padding:24px;borde
 <script>
 // ── CATALOGUE ──────────────────────────────────────────────────────────────
 var PRODUCTS = [
-  { id:'tshirt',    name:'T-Shirt',    price:29.00, img:'images/tshirt-fcmq.png',    sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-tshirt-fcmq.png', kidzId:'tshirt-kidz' },
+  { id:'tshirt',    name:'T-Shirt',    price:29.00, img:'images/tshirt-fcmq.png',    sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-tshirt-fcmq.png', kidzId:'tshirt-kidz',
+    colors:[
+      { name:'Noir', img:'images/tshirt-fcmq.png' },
+      { name:'Gris Sport', img:'images/tshirt-fcmq-gris.png' }
+    ] },
   { id:'tshirt-kidz', hidden:true, name:'T-Shirt (Kidz)', price:27.00, img:'images/tshirt-fcmq.png', sizes:['XS','S','M','L','XL'] },
-  { id:'manches-longues', name:'T-Shirt Manches Longues', price:35.00, img:'images/manches-longues-fcmq.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-manches-longues-fcmq.png', kidzId:'manches-longues-kidz' },
+  { id:'manches-longues', name:'T-Shirt Manches Longues', price:35.00, img:'images/manches-longues-fcmq.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-manches-longues-fcmq.png', kidzId:'manches-longues-kidz',
+    colors:[
+      { name:'Noir', img:'images/manches-longues-fcmq.png' },
+      { name:'Gris Sport', img:'images/manches-longues-fcmq-gris.png' }
+    ] },
   { id:'manches-longues-kidz', hidden:true, name:'T-Shirt Manches Longues (Kidz)', price:32.00, img:'images/manches-longues-fcmq.png', sizes:['XS','S','M','L','XL'] },
-  { id:'crewneck',  name:'Crewneck',   price:45.00, img:'images/crewneck-fcmq.png',  sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-crewneck-fcmq.png', kidzId:'crewneck-kidz' },
+  { id:'crewneck',  name:'Crewneck',   price:45.00, img:'images/crewneck-fcmq.png',  sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-crewneck-fcmq.png', kidzId:'crewneck-kidz',
+    colors:[
+      { name:'Noir', img:'images/crewneck-fcmq.png' },
+      { name:'Gris Sport', img:'images/crewneck-fcmq-gris.png' }
+    ] },
   { id:'crewneck-kidz', hidden:true, name:'Crewneck (Kidz)', price:42.00, img:'images/crewneck-fcmq.png', sizes:['XS','S','M','L','XL'] },
   { id:'hoodie',    name:'Hoodie',     price:49.00, img:'images/hoodie-fcmq-noir.png', sizes:['S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-hoodie-fcmq.png', kidzId:'hoodie-kidz',
     colors:[
@@ -201,7 +213,11 @@ var PRODUCTS = [
       { name:'Gris Sport', img:'images/hoodie-fcmq-gris.png' }
     ] },
   { id:'hoodie-kidz', hidden:true, name:'Hoodie (Kidz)', price:45.00, img:'images/hoodie-fcmq-noir.png', sizes:['XS','S','M','L','XL'] },
-  { id:'veste-fz',  name:'Veste Full Zip', price:55.00, img:'images/veste-fz-fcmq.png', sizes:['XS','S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-veste-fz-fcmq.png', kidzId:'veste-fz-kidz' },
+  { id:'veste-fz',  name:'Veste Full Zip', price:55.00, img:'images/veste-fz-fcmq.png', sizes:['XS','S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-veste-fz-fcmq.png', kidzId:'veste-fz-kidz',
+    colors:[
+      { name:'Noir', img:'images/veste-fz-fcmq.png' },
+      { name:'Gris Sport', img:'images/veste-fz-fcmq-gris.png' }
+    ] },
   { id:'veste-fz-kidz', hidden:true, name:'Veste Full Zip (Kidz)', price:52.00, img:'images/veste-fz-fcmq.png', sizes:['XS','S','M','L','XL'] },
   { id:'veste-sc',  name:'Veste Sans Capuchon', price:49.00, img:'images/veste-sc-fcmq-noir.png', sizes:['XS','S','M','L','XL','2XL','3XL','4XL'], sizeChart:'images/chart-veste-sans-capuchon-fcmq.png', kidzId:'veste-sc-kidz',
     colors:[
